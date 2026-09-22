@@ -169,6 +169,7 @@ tbody tr:hover{
 .up{background:var(--green)}
 .down{background:var(--red)}
 .disabled{background:var(--gray)}
+.unknown{background:#8c8c8c}
 
 .footer{
   padding:16px 0;
@@ -240,7 +241,7 @@ tbody tr:hover{
 
     <div class="card">
       <div id="disabled" class="num">0</div>
-      <div class="lbl">Disabled</div>
+      <div class="lbl">Admin Down</div>
     </div>
   </div>
 
@@ -432,10 +433,18 @@ function drawRows(ports){
       String(p.ifAdminStatus || "").toLowerCase();
 
     const statusClass =
-      status === "up" ? "up" : "down";
+      status === "up"
+        ? "up"
+        : status === "down"
+          ? "down"
+          : "unknown";
 
     const adminClass =
-      admin === "up" ? "up" : "disabled";
+      admin === "up"
+        ? "up"
+        : admin === "down"
+          ? "disabled"
+          : "unknown";
 
     return `
       <tr>
@@ -476,7 +485,7 @@ async function loadInventory(){
 
     const response =
       await fetch(
-        "data/portinventory.json?v=" +
+        "data/devices.json?v=" +
         Date.now(),
         {
           cache:"no-store"
@@ -489,37 +498,63 @@ async function loadInventory(){
       );
     }
 
-    inventory = await response.json();
+    const catalog = await response.json();
 
     if(
-      !inventory ||
-      !Array.isArray(inventory.devices)
+      !catalog ||
+      !Array.isArray(catalog.devices)
     ){
       throw new Error(
-        "Invalid PortInventory JSON"
+        "Invalid PortInventory catalog"
       );
     }
+
+    inventory = {
+      ...catalog,
+      devices: catalog.devices
+    };
 
     populateDevices();
 
     const urlDevice =
       getDeviceFromUrl();
 
-    const selected =
+    const selectedMeta =
       urlDevice ||
-      inventory.devices.find(
-        d => Number(d.device_id) === 63
-      ) ||
       inventory.devices[0];
 
-    if(selected){
+    if(selectedMeta){
 
       $("switch").value =
-        String(selected.device_id);
+        String(selectedMeta.device_id);
 
-      renderDevice(selected);
+      updateUrl(selectedMeta.device_id);
+
+      const deviceResponse =
+        await fetch(
+          "data/devices/" +
+          encodeURIComponent(selectedMeta.device_id) +
+          ".json?v=" +
+          Date.now(),
+          {
+            cache:"no-store"
+          }
+        );
+
+      if(!deviceResponse.ok){
+        throw new Error(
+          "HTTP " + deviceResponse.status +
+          " while loading device " +
+          selectedMeta.device_id
+        );
+      }
+
+      const selected =
+        await deviceResponse.json();
 
       currentDevice = selected;
+
+      renderDevice(selected);
 
     }else{
 
