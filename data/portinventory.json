@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-09-22T17:54:34+07:00",
+    "generated_at": "2026-09-22T18:00:52+07:00",
     "device_count": 66,
     "devices": [
         {
@@ -787,9 +787,9 @@
                     "ifName": "Fa0/21",
                     "ifDescr": "FastEthernet0/21",
                     "ifAlias": "PC_DEDE",
-                    "ifOperStatus": "up",
+                    "ifOperStatus": "down",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 100000000,
+                    "ifSpeed": 10000000,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -12778,9 +12778,9 @@
                     "ifName": "1/1/35",
                     "ifDescr": "1/1/35",
                     "ifAlias": "PRNTR-STORE",
-                    "ifOperStatus": "up",
+                    "ifOperStatus": "down",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 100000000,
+                    "ifSpeed": 0,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -13876,7 +13876,7 @@
                     "ifAlias": "PC_",
                     "ifOperStatus": "up",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 1000000000,
+                    "ifSpeed": 10000000,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -15518,9 +15518,9 @@
                     "ifName": "1/1/7",
                     "ifDescr": "1/1/7",
                     "ifAlias": "PC_Parkee",
-                    "ifOperStatus": "up",
+                    "ifOperStatus": "down",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 1000000000,
+                    "ifSpeed": 0,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -23932,9 +23932,9 @@
                     "ifName": "1/1/31",
                     "ifDescr": "1/1/31",
                     "ifAlias": "IPTV_800",
-                    "ifOperStatus": "down",
+                    "ifOperStatus": "up",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 0,
+                    "ifSpeed": 100000000,
                     "ifType": "ethernetCsmacd"
                 },
                 {
