@@ -361,23 +361,57 @@ function populateDevices(){
   });
 }
 
-function selectDevice(deviceId){
+async function selectDevice(deviceId){
 
-  const device = inventory.devices.find(
+  const deviceMeta = inventory.devices.find(
     d => Number(d.device_id) === Number(deviceId)
   );
 
-  if(!device){
+  if(!deviceMeta){
     return;
   }
 
-  currentDevice = device;
+  try{
 
-  $("switch").value = String(device.device_id);
+    const response =
+      await fetch(
+        "data/devices/" +
+        encodeURIComponent(deviceMeta.device_id) +
+        ".json?v=" +
+        Date.now(),
+        {
+          cache:"no-store"
+        }
+      );
 
-  updateUrl(device.device_id);
+    if(!response.ok){
+      throw new Error(
+        "HTTP " + response.status
+      );
+    }
 
-  renderDevice(device);
+    const device = await response.json();
+
+    currentDevice = device;
+
+    $("switch").value =
+      String(device.device_id);
+
+    updateUrl(device.device_id);
+
+    renderDevice(device);
+
+  }catch(error){
+
+    console.error(error);
+
+    $("banner").classList.add("error");
+
+    $("banner").textContent =
+      "▤ Unable to load switch data: " +
+      error.message;
+
+  }
 }
 
 function renderDevice(device){
