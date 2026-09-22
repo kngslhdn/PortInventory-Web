@@ -1,5 +1,5 @@
 {
-    "generated_at": "2026-09-22T16:14:35+07:00",
+    "generated_at": "2026-09-22T17:54:34+07:00",
     "device_count": 66,
     "devices": [
         {
@@ -8775,9 +8775,9 @@
                     "ifName": "1/1/4",
                     "ifDescr": "1/1/4",
                     "ifAlias": "KIJKT1LAP607",
-                    "ifOperStatus": "up",
+                    "ifOperStatus": "down",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 100000000,
+                    "ifSpeed": 0,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -12089,7 +12089,7 @@
                     "ifAlias": "PC_",
                     "ifOperStatus": "up",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 10000000,
+                    "ifSpeed": 1000000000,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -12747,7 +12747,7 @@
                     "ifAlias": "PC_",
                     "ifOperStatus": "up",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 10000000,
+                    "ifSpeed": 1000000000,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -14873,7 +14873,7 @@
                     "ifAlias": "PRNTR_FINANCE",
                     "ifOperStatus": "up",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 10000000,
+                    "ifSpeed": 1000000000,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -15452,9 +15452,9 @@
                     "ifName": "1/1/1",
                     "ifDescr": "1/1/1",
                     "ifAlias": "PC_",
-                    "ifOperStatus": "down",
+                    "ifOperStatus": "up",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 0,
+                    "ifSpeed": 1000000000,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -15540,9 +15540,9 @@
                     "ifName": "1/1/9",
                     "ifDescr": "1/1/9",
                     "ifAlias": "PC_",
-                    "ifOperStatus": "down",
+                    "ifOperStatus": "up",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 0,
+                    "ifSpeed": 1000000000,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -15595,9 +15595,9 @@
                     "ifName": "1/1/14",
                     "ifDescr": "1/1/14",
                     "ifAlias": "1/1/14",
-                    "ifOperStatus": "up",
+                    "ifOperStatus": "down",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 1000000000,
+                    "ifSpeed": 0,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -16165,9 +16165,9 @@
                     "ifName": "1/1/10",
                     "ifDescr": "1/1/10",
                     "ifAlias": "SGN-C-KTC-01",
-                    "ifOperStatus": "down",
+                    "ifOperStatus": "up",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 0,
+                    "ifSpeed": 100000000,
                     "ifType": "ethernetCsmacd"
                 },
                 {
@@ -23932,9 +23932,9 @@
                     "ifName": "1/1/31",
                     "ifDescr": "1/1/31",
                     "ifAlias": "IPTV_800",
-                    "ifOperStatus": "up",
+                    "ifOperStatus": "down",
                     "ifAdminStatus": "up",
-                    "ifSpeed": 100000000,
+                    "ifSpeed": 0,
                     "ifType": "ethernetCsmacd"
                 },
                 {
