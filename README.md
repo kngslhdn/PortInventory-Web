@@ -18,6 +18,7 @@ The site displays:
 - Link speed
 - Interface type
 - Search, sorting, and pagination
+- Physical switch ports only; LAG, VLAN, and virtual interfaces are excluded
 
 No internal IP addresses are intended to be published.
 
