@@ -1,5 +1,7 @@
 # PortInventory Web
 
+Public view is limited to switch devices. Servers, NAS, routers, and other non-switch devices are excluded from the public inventory.
+
 Public read-only web presentation of sanitized switch port inventory data exported from LibreNMS.
 
 ## Architecture
