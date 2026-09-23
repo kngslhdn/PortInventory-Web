@@ -394,6 +394,10 @@ let currentPage = 1;
 let pageSize = 25;
 let sortField = "ifName";
 let sortAscending = true;
+const naturalCollator = new Intl.Collator(undefined, {
+  numeric: true,
+  sensitivity: "base"
+});
 
 function speed(v){
 
@@ -464,10 +468,9 @@ function populateDevices(){
     option.value = device.device_id;
 
     option.textContent =
-      (device.sysName || device.hostname || "Unknown") +
-      " (" +
-      (device.hostname || "-") +
-      ")";
+      device.sysName ||
+      device.hostname ||
+      "Unknown Switch";
 
     select.appendChild(option);
 
@@ -485,6 +488,9 @@ async function selectDevice(deviceId){
   }
 
   try{
+
+    $("banner").classList.remove("error");
+    currentPage = 1;
 
     const response =
       await fetch(
@@ -590,12 +596,22 @@ function drawRows(ports){
       av = Number(av || 0);
       bv = Number(bv || 0);
     }else{
-      av = String(av).toLowerCase();
-      bv = String(bv).toLowerCase();
+      av = String(av);
+      bv = String(bv);
     }
 
-    if(av < bv) return sortAscending ? -1 : 1;
-    if(av > bv) return sortAscending ? 1 : -1;
+    let comparison;
+
+    if(sortField === "ifName"){
+      comparison = naturalCollator.compare(av, bv);
+    }else{
+      const aLower = av.toLowerCase();
+      const bLower = bv.toLowerCase();
+      comparison = aLower < bLower ? -1 : aLower > bLower ? 1 : 0;
+    }
+
+    if(comparison < 0) return sortAscending ? -1 : 1;
+    if(comparison > 0) return sortAscending ? 1 : -1;
     return 0;
   });
 
@@ -661,6 +677,7 @@ async function loadInventory(){
 
   try{
 
+    $("banner").classList.remove("error");
     $("banner").textContent =
       "▤ Loading PortInventory data...";
 
