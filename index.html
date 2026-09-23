@@ -117,12 +117,55 @@ label{font-weight:600}
   margin-top:2px
 }
 
+.table-tools{
+  display:flex;
+  gap:8px;
+  margin-bottom:8px
+}
+
 .search{
+  flex:1;
   width:100%;
   padding:9px 12px;
   border:1px solid #cbd1d6;
   border-radius:3px;
   margin-bottom:0
+}
+
+.sort,.sort-btn,.page-btn{
+  border:1px solid #cbd1d6;
+  background:#fff;
+  border-radius:3px;
+  padding:8px 10px;
+  cursor:pointer
+}
+
+.sort-btn,.page-btn{
+  min-width:38px
+}
+
+.sort-btn:hover,.page-btn:hover{
+  background:#f0f4f7
+}
+
+.table-meta{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:8px 0;
+  color:var(--muted);
+  font-size:12px
+}
+
+.pagination{
+  display:flex;
+  align-items:center;
+  gap:8px
+}
+
+.page-btn:disabled{
+  opacity:.45;
+  cursor:not-allowed
 }
 
 .table-wrap{
@@ -177,6 +220,27 @@ tbody tr:hover{
   font-size:12px
 }
 
+.meta-line{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin:8px 0 12px;
+  color:var(--muted);
+  font-size:12px
+}
+
+.retry-btn{
+  border:1px solid #cbd1d6;
+  background:#fff;
+  border-radius:3px;
+  padding:6px 10px;
+  cursor:pointer
+}
+
+.retry-btn:hover{
+  background:#f0f4f7
+}
+
 .error{
   background:#fff1f0;
   color:#a8071a;
@@ -187,6 +251,9 @@ tbody tr:hover{
   .cards{grid-template-columns:repeat(2,1fr)}
   .select{min-width:0;flex:1}
   .toolbar{flex-wrap:wrap}
+  .table-tools{flex-wrap:wrap}
+  .sort{min-width:150px}
+  .table-meta{flex-wrap:wrap;gap:8px}
 }
 </style>
 </head>
@@ -219,8 +286,13 @@ tbody tr:hover{
     </select>
   </div>
 
-  <div id="banner" class="banner">
+  <div id="banner" class="banner" role="status" aria-live="polite">
     ▤ Loading PortInventory...
+  </div>
+
+  <div class="meta-line">
+    <span id="generatedAt">Data time: -</span>
+    <button id="retry" class="retry-btn" type="button">Refresh Data</button>
   </div>
 
   <div class="cards">
@@ -245,11 +317,32 @@ tbody tr:hover{
     </div>
   </div>
 
-  <input
-    id="search"
-    class="search"
-    placeholder="Search port, description, alias, status..."
-  >
+  <div class="table-tools">
+    <input
+      id="search"
+      class="search"
+      placeholder="Search port, description, alias, status..."
+    >
+
+    <select id="sort" class="sort" aria-label="Sort ports">
+      <option value="ifName">Sort: Port</option>
+      <option value="ifOperStatus">Sort: Status</option>
+      <option value="ifAdminStatus">Sort: Admin</option>
+      <option value="ifSpeed">Sort: Speed</option>
+      <option value="ifType">Sort: Type</option>
+    </select>
+
+    <button id="sortDir" class="sort-btn" type="button" title="Toggle sort direction">↑</button>
+  </div>
+
+  <div class="table-meta">
+    <span id="resultCount">0 ports</span>
+    <div class="pagination">
+      <button id="prevPage" class="page-btn" type="button">‹</button>
+      <span id="pageInfo">Page 1 / 1</span>
+      <button id="nextPage" class="page-btn" type="button">›</button>
+    </div>
+  </div>
 
   <div class="table-wrap">
     <table>
@@ -281,6 +374,11 @@ const $ = id => document.getElementById(id);
 
 let inventory = null;
 let currentDevice = null;
+let currentPorts = [];
+let currentPage = 1;
+let pageSize = 25;
+let sortField = "ifName";
+let sortAscending = true;
 
 function speed(v){
 
@@ -416,6 +514,14 @@ async function selectDevice(deviceId){
 
 function renderDevice(device){
 
+  const generated =
+    device.generated_at ||
+    inventory?.generated_at ||
+    "-";
+
+  $("generatedAt").textContent =
+    "Data time: " + generated;
+
   const ports = Array.isArray(device.ports)
     ? device.ports
     : [];
@@ -449,16 +555,48 @@ function renderDevice(device){
 
 function drawRows(ports){
 
-  const q = $("search").value.toLowerCase();
+  currentPorts = Array.isArray(ports) ? ports : [];
 
-  const filtered = ports.filter(port =>
+  const q = $("search").value.trim().toLowerCase();
+
+  const filtered = currentPorts.filter(port =>
     Object.values(port)
       .join(" ")
       .toLowerCase()
       .includes(q)
   );
 
-  $("rows").innerHTML = filtered.map(p => {
+  const sorted = [...filtered].sort((a,b) => {
+
+    let av = a[sortField] ?? "";
+    let bv = b[sortField] ?? "";
+
+    if(sortField === "ifSpeed"){
+      av = Number(av || 0);
+      bv = Number(bv || 0);
+    }else{
+      av = String(av).toLowerCase();
+      bv = String(bv).toLowerCase();
+    }
+
+    if(av < bv) return sortAscending ? -1 : 1;
+    if(av > bv) return sortAscending ? 1 : -1;
+    return 0;
+  });
+
+  const totalPages =
+    Math.max(1, Math.ceil(sorted.length / pageSize));
+
+  currentPage =
+    Math.min(currentPage, totalPages);
+
+  const start =
+    (currentPage - 1) * pageSize;
+
+  const visible =
+    sorted.slice(start, start + pageSize);
+
+  $("rows").innerHTML = visible.map(p => {
 
     const status =
       String(p.ifOperStatus || "").toLowerCase();
@@ -483,31 +621,25 @@ function drawRows(ports){
     return `
       <tr>
         <td>${escapeHtml(p.ifName || "-")}</td>
-
-        <td>
-          <span class="badge ${statusClass}">
-            ${escapeHtml(status.toUpperCase() || "-")}
-          </span>
-        </td>
-
-        <td>
-          <span class="badge ${adminClass}">
-            ${escapeHtml(admin.toUpperCase() || "-")}
-          </span>
-        </td>
-
+        <td><span class="badge ${statusClass}">${escapeHtml(status.toUpperCase() || "-")}</span></td>
+        <td><span class="badge ${adminClass}">${escapeHtml(admin.toUpperCase() || "-")}</span></td>
         <td>${escapeHtml(p.ifDescr || "-")}</td>
-
         <td>${escapeHtml(p.ifAlias || "-")}</td>
-
         <td>${escapeHtml(speed(p.ifSpeed))}</td>
-
         <td>${escapeHtml(p.ifType || "-")}</td>
       </tr>
     `;
 
   }).join("");
 
+  $("resultCount").textContent =
+    filtered.length + " of " + currentPorts.length + " ports";
+
+  $("pageInfo").textContent =
+    "Page " + currentPage + " / " + totalPages;
+
+  $("prevPage").disabled = currentPage <= 1;
+  $("nextPage").disabled = currentPage >= totalPages;
 }
 
 async function loadInventory(){
@@ -621,20 +753,70 @@ $("switch").addEventListener(
   }
 );
 
+$("retry").addEventListener(
+  "click",
+  () => {
+    currentDevice = null;
+    currentPorts = [];
+    currentPage = 1;
+    $("retry").disabled = true;
+
+    loadInventory().finally(() => {
+      $("retry").disabled = false;
+    });
+  }
+);
+
 $("search").addEventListener(
   "input",
   () => {
+    currentPage = 1;
+    drawRows(currentPorts);
+  }
+);
 
-    if(currentDevice){
+$("sort").addEventListener(
+  "change",
+  event => {
+    sortField = event.target.value;
+    currentPage = 1;
+    drawRows(currentPorts);
+  }
+);
 
-      drawRows(
-        Array.isArray(currentDevice.ports)
-          ? currentDevice.ports
-          : []
-      );
+$("sortDir").addEventListener(
+  "click",
+  () => {
+    sortAscending = !sortAscending;
+    $("sortDir").textContent = sortAscending ? "↑" : "↓";
+    currentPage = 1;
+    drawRows(currentPorts);
+  }
+);
 
+$("prevPage").addEventListener(
+  "click",
+  () => {
+    if(currentPage > 1){
+      currentPage--;
+      drawRows(currentPorts);
     }
+  }
+);
 
+$("nextPage").addEventListener(
+  "click",
+  () => {
+    const q = $("search").value.trim().toLowerCase();
+    const filteredCount = currentPorts.filter(port =>
+      Object.values(port).join(" ").toLowerCase().includes(q)
+    ).length;
+    const totalPages = Math.max(1, Math.ceil(filteredCount / pageSize));
+
+    if(currentPage < totalPages){
+      currentPage++;
+      drawRows(currentPorts);
+    }
   }
 );
 
