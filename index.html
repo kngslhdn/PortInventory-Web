@@ -107,6 +107,21 @@ label{font-weight:600}
   border-radius:3px
 }
 
+.card-up{
+  background:var(--green);
+  border-color:var(--green)
+}
+
+.card-down{
+  background:var(--red);
+  border-color:var(--red)
+}
+
+.card-disabled{
+  background:var(--gray);
+  border-color:var(--gray)
+}
+
 .num{
   font-size:22px;
   font-weight:700
@@ -301,17 +316,17 @@ tbody tr:hover{
       <div class="lbl">Total Ports</div>
     </div>
 
-    <div class="card">
+    <div class="card card-up">
       <div id="up" class="num">0</div>
       <div class="lbl">UP</div>
     </div>
 
-    <div class="card">
+    <div class="card card-down">
       <div id="down" class="num">0</div>
       <div class="lbl">DOWN</div>
     </div>
 
-    <div class="card">
+    <div class="card card-disabled">
       <div id="disabled" class="num">0</div>
       <div class="lbl">Admin Down</div>
     </div>
