@@ -1,1 +1,1 @@
-{"device_id":66,"hostname":null,"sysName":"vchikj.kijkt1.kempinski.local","status":true,"port_count":1,"ports":[{"port_id":3044,"ifIndex":2,"ifName":"eth0","ifDescr":"Device eth0 at 03:00.0 VMware - VMXNET3 Ethernet Controller","ifAlias":"Device eth0 at 03:00.0 VMware - VMXNET3 Ethernet Controller","ifOperStatus":"up","ifAdminStatus":"up","ifSpeed":1000000000,"ifType":"ethernetCsmacd"}]}
+{"device_id":66,"hostname":null,"sysName":"vchikj.kijkt1.kempinski.local","status":true,"port_count":0,"ports":[]}
